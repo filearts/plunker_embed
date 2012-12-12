@@ -1,3 +1,6 @@
+.c9revisions
+.git
+
 lib-cov
 *.seed
 *.log
@@ -11,4 +14,9 @@ pids
 logs
 results
 
+node_modules
 npm-debug.log
+
+config.json
+
+build

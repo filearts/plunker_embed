@@ -1,0 +1,52 @@
+!!! 5
+html#ng-app(ng-app="plunker.embed", lang="en", class="ng-app:plunker.embed", xmlns:ng="http://angularjs.org")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport",content="width=device-width, initial-scale=1.0")
+    base(href="/")
+    title(ng-bind="state.plunk.description")
+    != css("pages/embed")
+    // if lt IE 9
+      script(src="http://html5shim.googlecode.com/svn/trunk/html5.js")
+    // if lte IE 8
+      script
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+    // if lt IE 8
+      script(src="/vendor/json2/json2.js")
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js")
+    // script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js")
+    script
+      var _plunker = {
+        "url": !{url},
+        "package": !{package},
+        "plunk": !{plunk}
+      };
+    != js("pages/embed")
+
+  body
+    div.overlay
+      p.message
+    nav.navbar.navbar-fixed-top
+      div.navbar-inner
+        a.brand(href="http://plnkr.co", target="_blank") Plunker
+          sub.version v{{package.version}}
+
+        ul.nav.pull-right
+          li(ng-show="!!state.readme", ng-class="{active: state.tab =='readme' && !state.filename}", title="Show the readme file")
+            a(ng-href="/{{plunk.id}}/readme")
+              i.icon-info-sign
+          li(ng-class="{active: state.tab =='preview' && !state.filename}", ng-click="state.refreshPreview()", title="Preview or re-start preview")
+            a(ng-href="/{{plunk.id}}/preview")
+              i.icon-play
+          li(title="Open in the Plunker editor")
+            a(ng-href="{{url.www}}/edit/{{plunk.id}}")
+              i.icon-edit
+
+        <plunker-filelist plunk="plunk"></plunker-filelist>
+
+    div#content(ng-view)
