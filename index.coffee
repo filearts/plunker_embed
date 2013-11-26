@@ -1,86 +1,74 @@
-coffee = require("coffee-script")
-less = require("less")
-jade = require("jade")
 express = require("express")
-assets = require("connect-assets")
-nconf = require("nconf")
-request = require("request")
+expstate = require("express-state")
 lactate = require("lactate")
-path = require("path")
+request = require("request")
+nconf = require("nconf")
+hbs = require("hbs")
 
-pkginfo = require("./package.json")
+pkg = require("./package.json")
 
-# process.env.NODE_ENV = "production"
 
 # Set defaults in nconf
 require "./configure"
 
 
+server = express()
 apiUrl = nconf.get("url:api")
-app = module.exports = express()
+
+expstate.extend(server)
+
+hbs.registerHelper "expose", (exposed) -> hbs.handlebars.SafeString(exposed.toString().replace(/<\//g, "<\\/").replace(/-->/g, "--\\>"))
 
 
-lactateOptions = 
+# Configure express
+server.enable "trust proxy"
+
+server.engine "html", hbs.__express
+
+server.set "view engine", "html"
+server.set "views", "#{process.env.PWD}/views"
+
+
+# Express middleware
+
+server.use require("./middleware/vary").middleware()
+server.use lactate.static "#{process.env.PWD}/public",
   "max age": "one week"
+server.use server.router
+
+
+servePlunk = (req, res, next) ->
+  expose =
+    version: pkg.version
+    cachebuster: if process.env.NODE_ENV is "production" then "" else "?cachebuster=#{Date.now()}"
+    plunk:
+      description: ""
+      files:
+        'index.html': ""
+    
+  respond = ->
+    res.expose expose
+    res.render "index", expose
   
-assetOptions =
-  src: "#{__dirname}/assets"
-  buildDir: "assets/build"
-  buildFilenamer: (filename) ->
-    dir = path.dirname(filename)
-    ext = path.extname(filename)
-    base = path.basename(filename, ext)
+  if req.params.plunkId
+    options =
+      json: true
+      url: "#{apiUrl}/plunks/#{req.params.plunkId}"
     
-    return path.join dir, "{base}-#{pkginfo.version}#{ext}"
-  helperContext: app.locals
-
-app.set "views", "#{__dirname}/views"
-app.set "view engine", "jade"
-app.set "view options", layout: false
-
-app.use express.logger()
-app.use require("./middleware/vary").middleware()
-app.use lactate.static "#{__dirname}/build", lactateOptions
-app.use lactate.static "#{__dirname}/assets", lactateOptions
-app.use "/css/font", lactate.static("#{__dirname}/assets/vendor/Font-Awesome-More/font/", lactateOptions)
-
-if process.env.NODE_ENV is "production"
-  app.locals.js = (route) -> """<script src="/js/#{route}-#{pkginfo.version}.js"></script>"""
-  app.locals.css = (route) -> """<link rel="stylesheet" href="/css/#{route}-#{pkginfo.version}.css" />"""
-else
-  app.use assets(assetOptions)
+    request options, (err, response, body) ->
+      if err then respond()
+      if response.statusCode >= 400 then respond()
+      if !body then respond()
+      
+      expose.plunk = body
+      
+      respond()
   
-app.use express.cookieParser()
-app.use express.bodyParser()
-app.use require("./middleware/expose").middleware
-  "url": nconf.get("url")
-  "package": pkginfo
-
-app.use app.router
-
-app.use express.errorHandler()
+  else respond()
 
 
-
-app.get "/partials/:partial", (req, res, next) ->
-  res.render "partials/#{req.params.partial}"
-
-
-handlePlunk = (req, res, next) ->
-  request.get "#{apiUrl}/plunks/#{req.params.id}", (err, response, body) ->
-    return res.send(500) if err
-    return res.send(response.statusCode) if response.statusCode >= 400
-    
-    try
-      plunk = JSON.parse(response.body)
-    catch e
-      return res.send(500)
-    
-    unless plunk then res.send(404) # TODO: Better error page
-    else
-      res.locals.plunk = JSON.stringify(plunk).replace(/<\//g,"<\\/")
-      res.render "embed"
+server.get "/:plunkId", servePlunk
+server.get "/", servePlunk
 
 
-app.get "/:id", handlePlunk
-app.get "/:id*", handlePlunk
+module.exports = server

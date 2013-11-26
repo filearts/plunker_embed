@@ -1,0 +1,11 @@
+{
+ "host": "plunker_embed-c9-ggoodman.c9.io",
+ "port": 8080,
+ "url": {
+    "www": "http://plunker_www.ggoodman.c9.io",
+    "collab": "http://collab.plnkr.co",
+    "api": "http://api.plnkr.co",
+    "embed": "http://embed.plnkr.co",
+    "run": "http://plunker_run-c9-ggoodman.c9.io"
+  }
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width,user-scalable=0">
+
+    <link rel="stylesheet" href="/css/embed.{{version}}.css">
+
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <script>window.html5 || document.write('<script src="/vendor/html5shiv.js"><\/script>')</script>
+    <![endif]-->
+    <script>{{expose state}}</script>
+    <script src="/vendor/ace-builds/src-min-noconflict/ace.js"></script>
+    <script src="/js/embed.{{version}}.js{{cachebuster}}"></script>
+  </head>
+
+  <body ng-app="plunker.app.embed">
+    <header>
+      <div class="plnkr-logo"><a href="http://plnkr.co" target="_blank"><img src="http://plnkr.co/img/plunker.png"></a></div>
+      <div class="plnkr-files">
+        <ul>
+          {{#each plunk.files}}
+            <li><a ui-sref="embed.file({filename: '{{this.filename}}'})">{{this.filename}}</a></li>
+          {{/each}}
+        </ul>
+      </div>
+      <div class="plnkr-options">
+        <ul>
+          <li ng-if="getReadme()"><a class="btn btn-sm" ui-sref="embed.readme"><i class="icon-info-sign"></i></a></li>
+          <li><a class="btn btn-sm" ui-sref="embed.preview"><i class="icon-play"></i></a></li>
+          <li><a class="btn btn-sm" ng-click="edit()"><i class="icon-edit"></i></a></li>
+        </ul>
+      </div>
+    </header>
+    <div class="plnkr-body" ui-view>
+      <article>
+        {{#each plunk.files}}
+          <h2>filename</h2>
+          <code>
+            <pre>{{this.content}}</pre>
+          </code>
+        {{/each}}
+      </article>
+    </div>
+  </body>
+
+</html>

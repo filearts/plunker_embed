@@ -1,0 +1,82 @@
+@import "../vendor/bootstrap/bootstrap.less";
+@import "../vendor/fontstrap/font-awesome.less";
+
+header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 30px;
+  overflow: visible;
+  
+  
+  .plnkr-logo {
+    display: inline-block;
+    display: table-cell;
+    
+    img {
+      height: 26px;
+      width: 26px;
+      padding: 2px;
+    }
+  }
+  
+  .plnkr-files {
+    padding-left: 20px;
+    display: inline-block;
+    display: table-cell;
+    
+    ul {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+    }
+    
+    li {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+  }
+
+  .plnkr-options {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: inline-block;
+    float: right;
+    height: 30px;
+    overflow: visible;
+    
+    ul {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+    }
+    
+    li {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      height: 30px;
+      list-style: none;
+      
+      a {
+        padding: 5px 10px 4px;
+        color: #777777;
+        text-decoration: none;
+        text-shadow: 0 1px 0 #ffffff;
+      }
+    }
+  }
+}
+
+.plnkr-body {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+}
